@@ -1,0 +1,24 @@
+".\Objects\main.obj",
+".\Objects\GPIO.obj",
+".\Objects\UART.obj",
+".\Objects\task.obj",
+".\Objects\Timer.obj",
+".\Objects\Timer_Isr.obj",
+".\Objects\Soft_I2C.obj",
+".\Objects\Exti.obj",
+".\Objects\Exti_Isr.obj",
+".\Objects\WS2812B.obj",
+".\Objects\WS2812B_LEDs.obj",
+".\Objects\Keys.obj",
+".\Objects\EC11.obj",
+".\Objects\oled.obj",
+".\Objects\App_WS2812.obj",
+".\Objects\App_Print.obj",
+".\Objects\App_Keys.obj",
+".\Objects\App_EC11.obj",
+".\Objects\App_DisplayOLED.obj",
+".\Objects\App_GameProcess.obj",
+".\Objects\App_StandBy.obj" 
+TO ".\Objects\SW2812" 
+PRINT(".\Listings\SW2812.m51") RAMSIZE(256) 
+DISABLEWARNING (16) 

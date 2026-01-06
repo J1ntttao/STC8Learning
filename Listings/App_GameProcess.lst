@@ -1,0 +1,375 @@
+C51 COMPILER V9.60.7.0   APP_GAMEPROCESS                                                   01/05/2026 22:26:28 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE APP_GAMEPROCESS
+OBJECT MODULE PLACED IN .\Objects\App_GameProcess.obj
+COMPILER INVOKED BY: E:\AAAAAA\Keil_v5\C51\BIN\C51.EXE App\App_GameProcess.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\Use
+                    -r;.\Lib;.\Hardware;.\App;.\Bare-MetalMultitasking;.\Hardware\I2Csoft_oled) DEBUG OBJECTEXTEND PRINT(.\Listings\App_GameP
+                    -rocess.lst) OBJECT(.\Objects\App_GameProcess.obj)
+
+line level    source
+
+   1          #include "App.h"
+   2          
+   3          //按键排布
+   4          //        KEY1
+   5          // KEY0                  KEY2       KEY4
+   6          //            KEY3
+   7          
+   8          void Device_Default2LevelSW(u8 key){
+   9   1                      if(key == 4){
+  10   2                      //切换至下一个状态
+  11   2                      WS2812_initLED();   // 灭掉所有灯
+  12   2                      WS2812_initLED();   // 有点bug 灭两次    
+  13   2                                      DeviceState = DeviceLevelSW;
+  14   2                                      OLED_Clear();
+  15   2                                      App_OLED_refresh();
+  16   2                      }
+  17   1      }
+  18                  
+  19          
+  20          void Device_LevelSW2DeviceLvSwitch(u8 key){
+  21   1              static char level = 1;
+  22   1                      if(key == 1){
+  23   2                      //BTN KEY1
+  24   2                                      level--;
+  25   2                                      if(level < 1) level = 3;
+  26   2                                      if(level > 3) level = 1;
+  27   2                                      LevelSwitch = level;
+  28   2                                      App_OLED_refresh();
+  29   2                      }
+  30   1                      if(key == 3){
+  31   2                      //BTN KEY3
+  32   2                                      level++;
+  33   2                                      if(level < 1) level = 3;
+  34   2                                      if(level > 3) level = 1;
+  35   2                                      LevelSwitch = level;
+  36   2                                      App_OLED_refresh();
+  37   2                      }
+  38   1                      if(key == 4){ // 玩家按下确认按钮 进入二级选择难度关卡
+  39   2                      //BTN KEY4
+  40   2                                      DeviceState = DeviceLvSwitch;
+  41   2      
+  42   2      //                              if(level == 1){ 
+  43   2      //                                              Lv1LEDinit();
+  44   2      //                                              WS2812_RefreshLEDColor(1);
+  45   2      //                                              WS2812_RefreshLEDColor(0);
+  46   2      //                              }
+  47   2      //                              else if(level == 2){
+  48   2      //                                              Lv2LEDinit(); 
+  49   2      //                                              WS2812_RefreshLEDColor(1);
+  50   2      //                                              WS2812_RefreshLEDColor(0);                                      
+  51   2      //                              }
+  52   2      //                              else if(level == 3){
+  53   2      //                                              Lv3LEDinit();
+C51 COMPILER V9.60.7.0   APP_GAMEPROCESS                                                   01/05/2026 22:26:28 PAGE 2   
+
+  54   2      //                                              WS2812_RefreshLEDColor(1);
+  55   2      //                                              WS2812_RefreshLEDColor(0);                                              
+  56   2      //                              }
+  57   2                  
+  58   2                      OLED_Clear();
+  59   2                                      App_OLED_refresh();
+  60   2                      }
+  61   1      }
+  62          // 已选定关卡 进行初始化关卡
+  63          
+  64          void Device_LvSwitch2Start(u8 key){
+  65   1          if(key == 1){
+  66   2          //BTN KEY1
+  67   2              if(LevelSwitch == Level1){
+  68   3                  Lv1Lvsw--;
+  69   3                  if(Lv1Lvsw>4)  Lv1Lvsw = 1;
+  70   3                  if(Lv1Lvsw==0) Lv1Lvsw = 4;
+  71   3                  App_OLED_refresh();
+  72   3              }
+  73   2              else if(LevelSwitch == Level2){
+  74   3                  Lv2Lvsw--;
+  75   3                  if(Lv2Lvsw>4)  Lv2Lvsw = 1;
+  76   3                  if(Lv2Lvsw==0) Lv2Lvsw = 4;
+  77   3                  App_OLED_refresh();
+  78   3              }      
+  79   2              else if(LevelSwitch == Level3){
+  80   3                  Lv3Lvsw--;
+  81   3                  if(Lv3Lvsw>4)  Lv3Lvsw = 1;
+  82   3                  if(Lv3Lvsw==0) Lv3Lvsw = 4;
+  83   3                  App_OLED_refresh();
+  84   3              }             
+  85   2          }
+  86   1          
+  87   1          if(key == 3){
+  88   2          //BTN KEY3
+  89   2              if(LevelSwitch == Level1){
+  90   3                  Lv1Lvsw++;
+  91   3                  if(Lv1Lvsw>4)  Lv1Lvsw = 1;
+  92   3                  if(Lv1Lvsw==0) Lv1Lvsw = 4;
+  93   3                  App_OLED_refresh();
+  94   3              }
+  95   2              else if(LevelSwitch == Level2){
+  96   3                  Lv2Lvsw++;
+  97   3                  if(Lv2Lvsw>4)  Lv2Lvsw = 1;
+  98   3                  if(Lv2Lvsw==0) Lv2Lvsw = 4;
+  99   3                  App_OLED_refresh();
+ 100   3              }      
+ 101   2              else if(LevelSwitch == Level3){
+ 102   3                  Lv3Lvsw++;
+ 103   3                  if(Lv3Lvsw>4)  Lv3Lvsw = 1;
+ 104   3                  if(Lv3Lvsw==0) Lv3Lvsw = 4;
+ 105   3                  App_OLED_refresh();
+ 106   3              }             
+ 107   2          }
+ 108   1          
+ 109   1          if(key == 4){ 
+ 110   2          //BTN KEY4
+ 111   2              DeviceState = DeviceStart;
+ 112   2              if(LevelSwitch == Level1){
+ 113   3              // Lv1Lvsw 当前选择的关卡进行初始化
+ 114   3                  Lv1LEDinit(Lv1Lvsw);
+ 115   3                  WS2812_RefreshLEDColor(1);
+C51 COMPILER V9.60.7.0   APP_GAMEPROCESS                                                   01/05/2026 22:26:28 PAGE 3   
+
+ 116   3                  WS2812_RefreshLEDColor(0);
+ 117   3                  App_OLED_refresh();            
+ 118   3              }    
+ 119   2              else if(LevelSwitch == Level2){
+ 120   3              // Lv2Lvsw 当前选择的关卡进行初始化
+ 121   3                  Lv2LEDinit(Lv2Lvsw);
+ 122   3                  WS2812_RefreshLEDColor(1);
+ 123   3                  WS2812_RefreshLEDColor(0);
+ 124   3                  App_OLED_refresh();            
+ 125   3              }    
+ 126   2              else if(LevelSwitch == Level3){
+ 127   3              // Lv3Lvsw 当前选择的关卡进行初始化
+ 128   3                  Lv3LEDinit(Lv3Lvsw);
+ 129   3                  WS2812_RefreshLEDColor(1);
+ 130   3                  WS2812_RefreshLEDColor(0);
+ 131   3                  App_OLED_refresh();            
+ 132   3              }         
+ 133   2          }
+ 134   1      }
+ 135          
+ 136          u8 g_color_array[28] = {7,7,7,7,        //  0  1  2  3
+ 137                                  0,7,7,7,        //  4  5  6  7          
+ 138                                  7,7,7,7,    //  8  9 10 11
+ 139                                  7,7,7,7,    // 12 13 14 15
+ 140                                  7,7,7,7,    // 16 17 18 19
+ 141                                  7,7,7,7,    // 20 21 22 23
+ 142                                  7,7,7,7};   // 24 25 26 27
+ 143          /* 
+ 144                   情况：
+ 145                                                                                           
+ 146                                  有这个颜色并且位置对了 1 1              判断指示灯 绿色
+ 147                                                                                           
+ 148                                  有这个颜色但是位置不对 1 0      橙色
+ 149                                  
+ 150                                  没这个颜色所以不谈位置 0 0              灭
+ 151          */
+ 152          
+ 153                                  
+ 154                                  
+ 155          // 红橙黄绿青蓝紫
+ 156          // 0 1 2 3 4 5 6 
+ 157                                  
+ 158          /*
+ 159                  Lv1: TIP显示本关出现的颜色       
+ 160                  POS会显示情况指示灯（位置相关）
+ 161                  ACK不显示
+ 162          */
+ 163                                  
+ 164          void GuessColorLv1(u8 Lv){ // 第一关，仅表示POS情况指示灯
+ 165   1          u8 i = 0;           
+ 166   1          u8 current_level_correctCnt = 0;
+ 167   1          for(i=0;i<4;i++){
+ 168   2              if(g_color_array[(g_current_line * 4) + i] == Lv1Code[Lv][i]){
+ 169   3                  // 对的话 POS 写上绿色
+ 170   3                  WS2812_WriteColor2Array(POS, (g_current_line * 4) + i, 3);
+ 171   3                  current_level_correctCnt++;
+ 172   3              }
+ 173   2          }
+ 174   1          if(current_level_correctCnt == 4){
+ 175   2              DeviceState = DeviceVictory;
+ 176   2              WS2812_RefreshLEDColor(0);
+ 177   2              WS2812_RefreshLEDColor(1);
+C51 COMPILER V9.60.7.0   APP_GAMEPROCESS                                                   01/05/2026 22:26:28 PAGE 4   
+
+ 178   2          }
+ 179   1      }
+ 180          
+ 181          /*
+ 182                  Lv2: TIP显示本关出现的颜色
+ 183                  POS不显示
+ 184                  ACK会显示情况指示灯（位置无关，仅表示个数）
+ 185          */
+ 186          void GuessColorLv2(u8 Lv){
+ 187   1          u8 i = 0;
+ 188   1          u8 current_level_correctCnt = 0;
+ 189   1          for(i=0;i<4;i++){
+ 190   2              if(g_color_array[(g_current_line * 4) + i] == Lv2Code[Lv][i]){
+ 191   3                  current_level_correctCnt++;
+ 192   3              }
+ 193   2          }
+ 194   1              // 一个不对 
+ 195   1              if(current_level_correctCnt == 0){      
+ 196   2                  for(i=0;i<4;i++){
+ 197   3                      WS2812_WriteColor2Array(ACK,((g_current_line * 4)+i), 0);
+ 198   3                  }
+ 199   2              }
+ 200   1              else if(current_level_correctCnt == 1){
+ 201   2                  
+ 202   2                  WS2812_WriteColor2Array(ACK,(g_current_line * 4), 3);
+ 203   2                  for(i=0;i<3;i++){
+ 204   3                      WS2812_WriteColor2Array(ACK,((g_current_line * 4)+1+i), 0);
+ 205   3                  }
+ 206   2              }
+ 207   1              else if(current_level_correctCnt == 2){
+ 208   2                  for(i=0;i<2;i++){
+ 209   3                      WS2812_WriteColor2Array(ACK,((g_current_line * 4)+i), 3);
+ 210   3                  }
+ 211   2                  for(i=0;i<2;i++){
+ 212   3                      WS2812_WriteColor2Array(ACK,((g_current_line * 4)+2+i), 0);
+ 213   3                  }
+ 214   2              }
+ 215   1              else if(current_level_correctCnt == 3){
+ 216   2                  
+ 217   2                  for(i=0;i<3;i++){
+ 218   3                      WS2812_WriteColor2Array(ACK,((g_current_line * 4)+i), 3);
+ 219   3                  }         
+ 220   2              
+ 221   2                  WS2812_WriteColor2Array(ACK,(g_current_line * 4)+3, 0);
+ 222   2              }        
+ 223   1              // 四个都对，结束
+ 224   1              else if(current_level_correctCnt == 4){ 
+ 225   2                  
+ 226   2                  for(i=0;i<4;i++){
+ 227   3                      WS2812_WriteColor2Array(ACK,((g_current_line * 4)+i), 3);
+ 228   3                  }
+ 229   2                  DeviceState = DeviceVictory;
+ 230   2                  WS2812_RefreshLEDColor(0);
+ 231   2                  WS2812_RefreshLEDColor(1);
+ 232   2              }
+ 233   1      }
+ 234              
+ 235          /*        
+ 236                  Lv3: TIP不显示
+ 237                  POS不显示
+ 238                  ACK会显示情况指示灯（位置无关，仅表示个数）
+ 239          */
+C51 COMPILER V9.60.7.0   APP_GAMEPROCESS                                                   01/05/2026 22:26:28 PAGE 5   
+
+ 240          void GuessColorLv3(u8 Lv) {
+ 241   1          u8 i, j;
+ 242   1          u8 correct_positions = 0;      /* 位置正确的数量 */
+ 243   1          u8 correct_colors = 0;         /* 颜色正确但位置不对的数量 */
+ 244   1          u8 answer_copy[4];             /* 答案副本用于标记 */
+ 245   1          u8 guess_copy[4];              /* 猜测副本用于标记 */
+ 246   1          u8 display_case;
+ 247   1          u8 green_count = 0;
+ 248   1          u8 orange_count = 0;
+ 249   1          u8 color;
+ 250   1          
+ 251   1          const char ACK_display_table[5][5] = {
+ 252   1              { 0,  1,  2,  3,  4},
+ 253   1              {-1,  5,  6,  7,  9},
+ 254   1              {-2, -6,  8,  9,  9},
+ 255   1              {-3, -7,  9,  9,  9},
+ 256   1              {-4,  9,  9,  9,  9}
+ 257   1          };
+ 258   1          
+ 259   1          /* 复制当前猜测和答案到临时数组 */
+ 260   1          for(i = 0; i < 4; i++) {
+ 261   2              guess_copy[i] = g_color_array[(g_current_line * 4) + i];
+ 262   2              answer_copy[i] = Lv3Code[Lv][i];
+ 263   2          }
+ 264   1          
+ 265   1          /* 第一步：检查位置完全正确的 */
+ 266   1          for(i = 0; i < 4; i++) {
+ 267   2              if(guess_copy[i] == answer_copy[i]) {
+ 268   3                  correct_positions++;
+ 269   3                  guess_copy[i] = 0xFF;     /* 标记为已匹配 */
+ 270   3                  answer_copy[i] = 0xFF;    /* 标记为已使用 */
+ 271   3              }
+ 272   2          }
+ 273   1          
+ 274   1          /* 第二步：检查颜色正确但位置不对的 */
+ 275   1          for(i = 0; i < 4; i++) {
+ 276   2              /* 跳过已匹配的位置 */
+ 277   2              if(guess_copy[i] == 0xFF) {
+ 278   3                  continue;
+ 279   3              }
+ 280   2              
+ 281   2              /* 在答案中寻找相同颜色 */
+ 282   2              for(j = 0; j < 4; j++) {
+ 283   3                  /* 跳过已使用的答案位置 */
+ 284   3                  if(answer_copy[j] == 0xFF) {
+ 285   4                      continue;
+ 286   4                  }
+ 287   3                  
+ 288   3                  /* 找到颜色相同但位置不同的 */
+ 289   3                  if(guess_copy[i] == answer_copy[j]) {
+ 290   4                      correct_colors++;
+ 291   4                      guess_copy[i] = 0xFF;   /* 标记为已匹配 */
+ 292   4                      answer_copy[j] = 0xFF;  /* 标记为已使用 */
+ 293   4                      break;                   /* 找到匹配后跳出内层循环 */
+ 294   4                  }
+ 295   3              }
+ 296   2          }
+ 297   1          
+ 298   1          /* 特殊处理全对情况 */
+ 299   1          if(correct_positions == 4) {
+ 300   2              for(i = 0; i < 4; i++) {
+ 301   3                  WS2812_WriteColor2Array(ACK, (g_current_line * 4) + i, 3);
+C51 COMPILER V9.60.7.0   APP_GAMEPROCESS                                                   01/05/2026 22:26:28 PAGE 6   
+
+ 302   3              }
+ 303   2              DeviceState = DeviceVictory;
+ 304   2              WS2812_RefreshLEDColor(0);
+ 305   2              WS2812_RefreshLEDColor(1);
+ 306   2              return;
+ 307   2          }
+ 308   1          
+ 309   1          /* 计算显示状态 */
+ 310   1          display_case = ACK_display_table[correct_positions][correct_colors];
+ 311   1          
+ 312   1          /* 设置LED颜色 */
+ 313   1          green_count = correct_positions;
+ 314   1          orange_count = correct_colors;
+ 315   1          
+ 316   1          for(i = 0; i < 4; i++) {
+ 317   2              if(i < green_count) {
+ 318   3                  color = 3;  /* 绿色 - 位置正确 */
+ 319   3              } else if(i < green_count + orange_count) {
+ 320   3                  color = 1;  /* 橙色 - 颜色正确但位置不对 */
+ 321   3              } else {
+ 322   3                  color = 0;  /* 红色 - 不正确 */
+ 323   3              }
+ 324   2              WS2812_WriteColor2Array(ACK, (g_current_line * 4) + i, color);
+ 325   2          }
+ 326   1          
+ 327   1          /* 处理特殊情况9（重新初始化LED） */
+ 328   1          if(display_case == 9) {
+ 329   2              WS2812_initLED();
+ 330   2          }
+ 331   1          
+ 332   1          /* 调试输出 */
+ 333   1          #if 0
+                  printf("Level: %d, Line: %d\n", Lv, g_current_line);
+                  printf("Correct positions: %d\n", correct_positions);
+                  printf("Correct colors: %d\n", correct_colors);
+                  printf("Display case: %d\n", display_case);
+                  #endif
+ 339   1      }
+ 340          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1581    ----
+   CONSTANT SIZE    =     25    ----
+   XDATA SIZE       =     29      48
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

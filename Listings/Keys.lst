@@ -1,0 +1,117 @@
+C51 COMPILER V9.60.7.0   KEYS                                                              01/05/2026 22:26:27 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE KEYS
+OBJECT MODULE PLACED IN .\Objects\Keys.obj
+COMPILER INVOKED BY: E:\AAAAAA\Keil_v5\C51\BIN\C51.EXE Hardware\Keys.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\User;.\Li
+                    -b;.\Hardware;.\App;.\Bare-MetalMultitasking;.\Hardware\I2Csoft_oled) DEBUG OBJECTEXTEND PRINT(.\Listings\Keys.lst) OBJEC
+                    -T(.\Objects\Keys.obj)
+
+line level    source
+
+   1          #include "Keys.h"
+   2          #include "GPIO.h"
+   3          
+   4          // 私有化, 避免被勿修改
+   5          static u8 states = 0x0F;
+   6          
+   7          void Keys_init() {
+   8   1          P0_MODE_IO_PU(GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6);
+   9   1                      P0_MODE_IO_PU(GPIO_Pin_7);
+  10   1      }
+  11          
+  12          void Keys_scan() {
+  13   1          // KEY1 -----------------------------------------
+  14   1          if(IS_KEY_DOWN(0) && KEY1 == 1) {
+  15   2              // 感知抬起: 判断是否是上升沿 (上一次是低电平0, 这次是高电平1)
+  16   2              //Keys_on_keyup(0);
+  17   2              // 记录最后一次(上一次)的状态为抬起
+  18   2              SET_KEY_UP(0);
+  19   2      
+  20   2              // P01 = 0;
+  21   2          } else if(IS_KEY_UP(0)&& KEY1 == 0) {
+  22   2              // 感知按下: 判断是否是下降沿 (上一次是高电平1, 这次是低电平0)
+  23   2              Keys_on_keydown(0);
+  24   2              // 记录最后一次(上一次)的状态为按下
+  25   2              SET_KEY_DOWN(0);
+  26   2      
+  27   2          }
+  28   1      
+  29   1          // KEY2 -----------------------------------------
+  30   1          if(IS_KEY_DOWN(1) && KEY2 == 1) {
+  31   2              // 感知抬起: 判断是否是上升沿 (上一次是低电平0, 这次是高电平1)
+  32   2              //Keys_on_keyup(1);
+  33   2              // 记录最后一次(上一次)的状态
+  34   2              SET_KEY_UP(1);
+  35   2          } else if(IS_KEY_UP(1)&& KEY2 == 0) {
+  36   2              // 感知按下: 判断是否是下降沿 (上一次是高电平1, 这次是低电平0)
+  37   2              Keys_on_keydown(1);
+  38   2              // 记录最后一次(上一次)的状态
+  39   2              SET_KEY_DOWN(1);
+  40   2          }
+  41   1      
+  42   1          // KEY3 -----------------------------------------
+  43   1          if(IS_KEY_DOWN(2) && KEY3 == 1) {
+  44   2              // 感知抬起: 判断是否是上升沿 (上一次是低电平0, 这次是高电平1)
+  45   2              //Keys_on_keyup(2);
+  46   2              // 记录最后一次(上一次)的状态
+  47   2              SET_KEY_UP(2);
+  48   2          } else if(IS_KEY_UP(2)&& KEY3 == 0) {
+  49   2              // 感知按下: 判断是否是下降沿 (上一次是高电平1, 这次是低电平0)
+  50   2              Keys_on_keydown(2);
+  51   2              // 记录最后一次(上一次)的状态
+  52   2              SET_KEY_DOWN(2);
+  53   2          }
+C51 COMPILER V9.60.7.0   KEYS                                                              01/05/2026 22:26:27 PAGE 2   
+
+  54   1      
+  55   1          // KEY4 -----------------------------------------
+  56   1          if(IS_KEY_DOWN(3) && KEY4 == 1) {
+  57   2              // 感知抬起: 判断是否是上升沿 (上一次是低电平0, 这次是高电平1)
+  58   2              //Keys_on_keyup(3);
+  59   2              // 记录最后一次(上一次)的状态
+  60   2              SET_KEY_UP(3);
+  61   2          } else if(IS_KEY_UP(3)&& KEY4 == 0) {
+  62   2              // 感知按下: 判断是否是下降沿 (上一次是高电平1, 这次是低电平0)
+  63   2              Keys_on_keydown(3);
+  64   2              // 记录最后一次(上一次)的状态
+  65   2              SET_KEY_DOWN(3);
+  66   2          }
+  67   1      
+  68   1      }
+  69          
+  70          u8 pre_P07key_state = 0;
+  71          void P07_Btn(){
+  72   1                      if(pre_P07key_state == 0 && P07 == 1) {
+  73   2      
+  74   2              // 记录最后一次(上一次)的状态为抬起
+  75   2                                      //Keys_on_keyup(4);     
+  76   2                              
+  77   2              pre_P07key_state = 1;
+  78   2      
+  79   2              // P01 = 0;
+  80   2          } else if(pre_P07key_state == 1 && P07 == 0) {
+  81   2      
+  82   2              // 记录最后一次(上一次)的状态为按下
+  83   2                                      Keys_on_keydown(4);
+  84   2                              
+  85   2              pre_P07key_state = 0;
+  86   2          }
+  87   1      }
+  88          
+  89          //extern void Keys_on_keydown(u8 key);
+  90          //extern void Keys_on_keyup(u8 key);
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    203    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =      2    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

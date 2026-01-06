@@ -1,0 +1,280 @@
+C51 COMPILER V9.60.7.0   APP_DISPLAYOLED                                                   01/05/2026 22:26:28 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE APP_DISPLAYOLED
+OBJECT MODULE PLACED IN .\Objects\App_DisplayOLED.obj
+COMPILER INVOKED BY: E:\AAAAAA\Keil_v5\C51\BIN\C51.EXE App\App_DisplayOLED.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\Use
+                    -r;.\Lib;.\Hardware;.\App;.\Bare-MetalMultitasking;.\Hardware\I2Csoft_oled) DEBUG OBJECTEXTEND PRINT(.\Listings\App_Displ
+                    -ayOLED.lst) OBJECT(.\Objects\App_DisplayOLED.obj)
+
+line level    source
+
+   1          #include "App.h"
+   2          #include "oled.h"
+   3          
+   4          u8 DeviceState = DeviceDefault;
+   5          char LevelSwitch = Level1;
+   6          
+   7          u8 Lv1Lvsw = 1; 
+   8          u8 Lv2Lvsw = 1; 
+   9          u8 Lv3Lvsw = 1; 
+  10          
+  11          void App_OLED_refresh(){        // 128 * 64
+  12   1                      if(DeviceState == DeviceDefault){
+  13   2                      OLED_ShowString(0,0,"GUESS COLOR v1.0",16);
+  14   2                      OLED_ShowString(0,2,"Please Press",16);
+  15   2                                      OLED_ShowString(0,4,"Rightmost Button",16);
+  16   2                                      OLED_ShowString(0,6,"to Start",16);
+  17   2                      }
+  18   1                      else if(DeviceState == DeviceLevelSW){
+  19   2                   switch(LevelSwitch){
+  20   3                       case Level1:
+  21   3                              OLED_ShowString(0,0,"Difficulty SW:",16);
+  22   3                              OLED_ShowString(0,2,"> 1. Normal",16);
+  23   3                              OLED_ShowString(0,4,"  2. Hard",16);
+  24   3                              OLED_ShowString(0,6,"  3. Experts",16);
+  25   3                              break;
+  26   3                       case Level2:
+  27   3                              OLED_ShowString(0,0,"Difficulty SW:",16);
+  28   3                              OLED_ShowString(0,2,"  1. Normal",16);
+  29   3                              OLED_ShowString(0,4,"> 2. Hard",16);
+  30   3                              OLED_ShowString(0,6,"  3. Experts",16);
+  31   3                              break;
+  32   3                       case Level3:
+  33   3                              OLED_ShowString(0,0,"Difficulty SW:",16);
+  34   3                              OLED_ShowString(0,2,"  1. Normal",16);
+  35   3                              OLED_ShowString(0,4,"  2. Hard",16);
+  36   3                              OLED_ShowString(0,6,"> 3. Experts",16); 
+  37   3                              break;
+  38   3                       default:
+  39   3                              OLED_Clear();
+  40   3                              break;
+  41   3                   }
+  42   2                      }
+  43   1                      else if(DeviceState == DeviceLvSwitch){
+  44   2                   if(LevelSwitch == Level1)
+  45   2                   {
+  46   3                       switch(Lv1Lvsw){
+  47   4                           case 1:
+  48   4                                  OLED_ShowString(0,0,"> Normal Lv1 ",16);
+  49   4                                  OLED_ShowString(0,2,"  Normal Lv2 ",16);
+  50   4                                  OLED_ShowString(0,4,"  Normal Lv3 ",16);
+  51   4                                  OLED_ShowString(0,6,"  Normal Lv4 ",16);
+  52   4                                  break;                        
+  53   4                           case 2:                              
+C51 COMPILER V9.60.7.0   APP_DISPLAYOLED                                                   01/05/2026 22:26:28 PAGE 2   
+
+  54   4                                  OLED_ShowString(0,0,"  Normal Lv1 ",16);
+  55   4                                  OLED_ShowString(0,2,"> Normal Lv2 ",16);
+  56   4                                  OLED_ShowString(0,4,"  Normal Lv3 ",16);
+  57   4                                  OLED_ShowString(0,6,"  Normal Lv4 ",16);
+  58   4                                  break;                        
+  59   4                           case 3:                              
+  60   4                                  OLED_ShowString(0,0,"  Normal Lv1 ",16);
+  61   4                                  OLED_ShowString(0,2,"  Normal Lv2 ",16);
+  62   4                                  OLED_ShowString(0,4,"> Normal Lv3 ",16);
+  63   4                                  OLED_ShowString(0,6,"  Normal Lv4 ",16);
+  64   4                                  break;                        
+  65   4                           case 4:                              
+  66   4                                  OLED_ShowString(0,0,"  Normal Lv1 ",16);
+  67   4                                  OLED_ShowString(0,2,"  Normal Lv2 ",16);
+  68   4                                  OLED_ShowString(0,4,"  Normal Lv3 ",16);
+  69   4                                  OLED_ShowString(0,6,"> Normal Lv4 ",16);
+  70   4                                  break;                 
+  71   4                           default:
+  72   4                                  OLED_Clear();
+  73   4                                  break;
+  74   4                       }
+  75   3                   }
+  76   2                   else if(LevelSwitch == Level2)
+  77   2                   {
+  78   3                       switch(Lv2Lvsw){
+  79   4                           case 1:
+  80   4                                  OLED_ShowString(0,0,"> Hard Lv1 ",16);
+  81   4                                  OLED_ShowString(0,2,"  Hard Lv2 ",16);
+  82   4                                  OLED_ShowString(0,4,"  Hard Lv3 ",16);
+  83   4                                  OLED_ShowString(0,6,"  Hard Lv4 ",16);
+  84   4                                  break;                      
+  85   4                           case 2:                            
+  86   4                                  OLED_ShowString(0,0,"  Hard Lv1 ",16);
+  87   4                                  OLED_ShowString(0,2,"> Hard Lv2 ",16);
+  88   4                                  OLED_ShowString(0,4,"  Hard Lv3 ",16);
+  89   4                                  OLED_ShowString(0,6,"  Hard Lv4 ",16);
+  90   4                                  break;                      
+  91   4                           case 3:                            
+  92   4                                  OLED_ShowString(0,0,"  Hard Lv1 ",16);
+  93   4                                  OLED_ShowString(0,2,"  Hard Lv2 ",16);
+  94   4                                  OLED_ShowString(0,4,"> Hard Lv3 ",16);
+  95   4                                  OLED_ShowString(0,6,"  Hard Lv4 ",16);
+  96   4                                  break;                      
+  97   4                           case 4:                            
+  98   4                                  OLED_ShowString(0,0,"  Hard Lv1 ",16);
+  99   4                                  OLED_ShowString(0,2,"  Hard Lv2 ",16);
+ 100   4                                  OLED_ShowString(0,4,"  Hard Lv3 ",16);
+ 101   4                                  OLED_ShowString(0,6,"> Hard Lv4 ",16);
+ 102   4                                  break;                 
+ 103   4                           default:
+ 104   4                                  OLED_Clear();
+ 105   4                                  break;
+ 106   4                       }
+ 107   3                   }    
+ 108   2                   else if(LevelSwitch == Level3)
+ 109   2                   {   
+ 110   3                       switch(Lv3Lvsw){
+ 111   4                           case 1:
+ 112   4                                  OLED_ShowString(0,0,"> Experts Lv1 ",16);
+ 113   4                                  OLED_ShowString(0,2,"  Experts Lv2 ",16);
+ 114   4                                  OLED_ShowString(0,4,"  Experts Lv3 ",16);
+ 115   4                                  OLED_ShowString(0,6,"  Experts Lv4 ",16);
+C51 COMPILER V9.60.7.0   APP_DISPLAYOLED                                                   01/05/2026 22:26:28 PAGE 3   
+
+ 116   4                                  break;                         
+ 117   4                           case 2:                               
+ 118   4                                  OLED_ShowString(0,0,"  Experts Lv1 ",16);
+ 119   4                                  OLED_ShowString(0,2,"> Experts Lv2 ",16);
+ 120   4                                  OLED_ShowString(0,4,"  Experts Lv3 ",16);
+ 121   4                                  OLED_ShowString(0,6,"  Experts Lv4 ",16);
+ 122   4                                  break;                         
+ 123   4                           case 3:                               
+ 124   4                                  OLED_ShowString(0,0,"  Experts Lv1 ",16);
+ 125   4                                  OLED_ShowString(0,2,"  Experts Lv2 ",16);
+ 126   4                                  OLED_ShowString(0,4,"> Experts Lv3 ",16);
+ 127   4                                  OLED_ShowString(0,6,"  Experts Lv4 ",16);
+ 128   4                                  break;                         
+ 129   4                           case 4:                               
+ 130   4                                  OLED_ShowString(0,0,"  Experts Lv1 ",16);
+ 131   4                                  OLED_ShowString(0,2,"  Experts Lv2 ",16);
+ 132   4                                  OLED_ShowString(0,4,"  Experts Lv3 ",16);
+ 133   4                                  OLED_ShowString(0,6,"> Experts Lv4 ",16);
+ 134   4                                  break;                 
+ 135   4                           default:
+ 136   4                                  OLED_Clear();
+ 137   4                                  break;
+ 138   4                       }
+ 139   3                   }             
+ 140   2                      }        
+ 141   1              
+ 142   1              /*
+ 143   1                   Lv1: TIP显示本关出现的颜色  
+ 144   1                        POS会显示情况指示灯（位置相关）
+ 145   1                        ACK不显示
+ 146   1                                                       
+ 147   1                   Lv2: TIP显示本关出现的颜色
+ 148   1                        POS不显示
+ 149   1                        ACK会显示情况指示灯（位置无关，仅表示个数）
+ 150   1                                                       
+ 151   1                   Lv3: TIP不显示
+ 152   1                        POS不显示
+ 153   1                        ACK会显示情况指示灯（位置无关，仅表示个数）
+ 154   1              */        
+ 155   1              
+ 156   1                      else if(DeviceState == DeviceStart){
+ 157   2                   char buff[20];
+ 158   2                   OLED_Clear();
+ 159   2                   switch(LevelSwitch){
+ 160   3                       case Level1:
+ 161   3                              sprintf(buff,"Nm Level %d",(int)Lv1Lvsw);
+ 162   3                              OLED_ShowString(0,0,buff,16);
+ 163   3                              OLED_ShowString(0,2,"TIP: Color used",16);
+ 164   3                              OLED_ShowString(0,4,"POS: Green Exact",16);
+ 165   3                              OLED_ShowString(0,6,"ACK: Not Display",16);
+ 166   3                              break;
+ 167   3                       case Level2:
+ 168   3                              sprintf(buff,"Hd Level %d",(int)Lv2Lvsw);
+ 169   3                              OLED_ShowString(0,0,buff,16);
+ 170   3                              OLED_ShowString(0,2,"TIP: Color used",16);
+ 171   3                              OLED_ShowString(0,4,"POS: Not Display",16);
+ 172   3                              OLED_ShowString(0,6,"ACK: Correct Cnt",16);
+ 173   3                              break;
+ 174   3                       case Level3:
+ 175   3                              sprintf(buff,"Ex Level %d",(int)Lv3Lvsw);
+ 176   3                              OLED_ShowString(0,0,buff,16);
+ 177   3                              OLED_ShowString(0,2,"TIP: Not Display",16);
+C51 COMPILER V9.60.7.0   APP_DISPLAYOLED                                                   01/05/2026 22:26:28 PAGE 4   
+
+ 178   3                              OLED_ShowString(0,4,"POS: Not Display",16);
+ 179   3                              OLED_ShowString(0,6,"ACK: Correct Cnt",16);
+ 180   3                              break;
+ 181   3                       default:
+ 182   3                              OLED_Clear();
+ 183   3                              break;     
+ 184   3                   }
+ 185   2                      }
+ 186   1                      else if(DeviceState == DeviceDefeat){
+ 187   2                   char buff[20];           
+ 188   2                   OLED_Clear();
+ 189   2                   switch(LevelSwitch){
+ 190   3                       case Level1:
+ 191   3                              sprintf(buff,"Nm Lv %d Failed",(int)Lv1Lvsw);
+ 192   3                              OLED_ShowString(0,0,buff,16);
+ 193   3                              OLED_ShowString(0,2,"You Fail...",16);
+ 194   3                              OLED_ShowString(0,4,"Don`t Worry",16);
+ 195   3                              OLED_ShowString(0,6,"Let`s try again",16);
+ 196   3                              break;
+ 197   3                       case Level2:
+ 198   3                              sprintf(buff,"Hd Lv %d Failed",(int)Lv2Lvsw);
+ 199   3                              OLED_ShowString(0,0,buff,16);
+ 200   3                              OLED_ShowString(0,2,"You Fail...",16);
+ 201   3                              OLED_ShowString(0,4,"You can do it",16);
+ 202   3                              OLED_ShowString(0,6,"Believe yourself",16);
+ 203   3                              break;
+ 204   3                       case Level3:
+ 205   3                              sprintf(buff,"Ex Lv %d Failed",(int)Lv3Lvsw);
+ 206   3                              OLED_ShowString(0,0,buff,16);
+ 207   3                              OLED_ShowString(0,2,"You Fail...",16);
+ 208   3                              OLED_ShowString(0,4,"Is it still",16);      
+ 209   3                              OLED_ShowString(0,6,"too hard for you",16);
+ 210   3                              break;
+ 211   3                       default:
+ 212   3                              OLED_Clear();
+ 213   3                              break;
+ 214   3                   }
+ 215   2                      }
+ 216   1                      else if(DeviceState == DeviceVictory){
+ 217   2                   char buff[20]; 
+ 218   2                   OLED_Clear();
+ 219   2                   switch(LevelSwitch){
+ 220   3                       case Level1:
+ 221   3                              sprintf(buff,"Nm Lv %d Cleared",(int)Lv1Lvsw);
+ 222   3                              OLED_ShowString(0,0,buff,16);
+ 223   3                              OLED_ShowString(0,2,"Perfect!",16);
+ 224   3                              OLED_ShowString(0,4,"You took the",16);
+ 225   3                              OLED_ShowString(0,6,"first step!",16);  
+ 226   3                              break;
+ 227   3                       case Level2:
+ 228   3                              sprintf(buff,"Hd Lv %d Cleared",(int)Lv2Lvsw);
+ 229   3                              OLED_ShowString(0,0,buff,16);
+ 230   3                              OLED_ShowString(0,2,"Excellent!",16);
+ 231   3                              OLED_ShowString(0,4,"Well played!",16);
+ 232   3                              OLED_ShowString(0,6,"Keep it up!",16);
+ 233   3                              break;
+ 234   3                       case Level3:
+ 235   3                              sprintf(buff,"Ex Lv %d Cleared",(int)Lv3Lvsw);
+ 236   3                              OLED_ShowString(0,0,buff,16);
+ 237   3                              OLED_ShowString(0,2,"Congratulations!",16);
+ 238   3                              OLED_ShowString(0,4,"Unbelievable!",16);      
+ 239   3                              OLED_ShowString(0,6,"You made it!",16);
+C51 COMPILER V9.60.7.0   APP_DISPLAYOLED                                                   01/05/2026 22:26:28 PAGE 5   
+
+ 240   3                              break;
+ 241   3                       default:
+ 242   3                              OLED_Clear();
+ 243   3                              break;
+ 244   3                   }                
+ 245   2                      }               
+ 246   1      }
+ 247          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   2241    ----
+   CONSTANT SIZE    =    919    ----
+   XDATA SIZE       =      5      20
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

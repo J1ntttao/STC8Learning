@@ -1,0 +1,441 @@
+C51 COMPILER V9.60.7.0   WS2812B                                                           01/05/2026 22:26:26 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE WS2812B
+OBJECT MODULE PLACED IN .\Objects\WS2812B.obj
+COMPILER INVOKED BY: E:\AAAAAA\Keil_v5\C51\BIN\C51.EXE Hardware\WS2812B.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\User;.
+                    -\Lib;.\Hardware;.\App;.\Bare-MetalMultitasking;.\Hardware\I2Csoft_oled) DEBUG OBJECTEXTEND PRINT(.\Listings\WS2812B.lst)
+                    - OBJECT(.\Objects\WS2812B.obj)
+
+line level    source
+
+   1          #include "WS2812B.h"
+   2          
+   3          u8 xdata red_color[3]               = {  0,      6,      0};
+   4          u8 xdata orange_color[3]                = {      2,      4,      0};
+   5          u8 xdata yellow_color[3]                = {      3,      3,      0};
+   6          u8 xdata green_color[3]             = {  6,      0,      0};
+   7          u8 xdata cyan_color[3]                  = {      4,      0,      2};
+   8          u8 xdata blue_color[3]                  = {      0,      0,  6};
+   9          u8 xdata purple_color[3]                = {      0,      3,      3};
+  10          
+  11          u8* Color_select(u8 index){
+  12   1          static u8 xdata color_buffer[3]; // ¾²Ì¬»º³åÇø´æ´¢ÑÕÉ«
+  13   1          
+  14   1          switch(index) {
+  15   2              case 0: // ºìÉ«
+  16   2                  color_buffer[0] = red_color[0];
+  17   2                  color_buffer[1] = red_color[1]; 
+  18   2                  color_buffer[2] = red_color[2];
+  19   2                  break;
+  20   2              case 1: // ³ÈÉ«
+  21   2                  color_buffer[0] = orange_color[0];
+  22   2                  color_buffer[1] = orange_color[1]; 
+  23   2                  color_buffer[2] = orange_color[2];
+  24   2                  break;
+  25   2              case 2: // »ÆÉ«
+  26   2                  color_buffer[0] = yellow_color[0];
+  27   2                  color_buffer[1] = yellow_color[1]; 
+  28   2                  color_buffer[2] = yellow_color[2];
+  29   2                  break;
+  30   2              case 3: // ÂÌÉ«
+  31   2                  color_buffer[0] = green_color[0];
+  32   2                  color_buffer[1] = green_color[1]; 
+  33   2                  color_buffer[2] = green_color[2];
+  34   2                  break;
+  35   2              case 4: // ÇàÉ«
+  36   2                  color_buffer[0] = cyan_color[0];
+  37   2                  color_buffer[1] = cyan_color[1]; 
+  38   2                  color_buffer[2] = cyan_color[2];
+  39   2                  break;
+  40   2              case 5: // À¶É«
+  41   2                  color_buffer[0] = blue_color[0];
+  42   2                  color_buffer[1] = blue_color[1]; 
+  43   2                  color_buffer[2] = blue_color[2];
+  44   2                  break;
+  45   2              case 6: // ×ÏÉ«
+  46   2                  color_buffer[0] = purple_color[0];
+  47   2                  color_buffer[1] = purple_color[1]; 
+  48   2                  color_buffer[2] = purple_color[2];
+  49   2                  break;
+  50   2              case 7: // null
+  51   2                  color_buffer[0] = 0;
+  52   2                  color_buffer[1] = 0; 
+  53   2                  color_buffer[2] = 0;
+C51 COMPILER V9.60.7.0   WS2812B                                                           01/05/2026 22:26:26 PAGE 2   
+
+  54   2                  break;                              
+  55   2              default: // Ä¬ÈÏºìÉ«
+  56   2                  color_buffer[0] = red_color[0];
+  57   2                  color_buffer[1] = red_color[1]; 
+  58   2                  color_buffer[2] = red_color[2];
+  59   2                  break;
+  60   2          }
+  61   1          return color_buffer;
+  62   1      }
+  63          
+  64          void Delay5us(void)     //@24.000MHz
+  65          {
+  66   1              unsigned char data i;
+  67   1      
+  68   1              i = 38;
+  69   1              while (--i);
+  70   1      }
+  71          
+  72          //-----------------------------------------------------------------------
+  73          void WS2812_LightALLLED(u8 SPI_io, u8 whichLed_index, u8 color_index){
+  74   1          u8 *selected_color; 
+  75   1          u8  xdata  *px;        // ÓÃÓÚÇåÁãÑ­»·µÄÖ¸Õë
+  76   1          u16 i, j, k;
+  77   1          //u32 crt_ms;
+  78   1          
+  79   1          SPI_Config(SPI_io, 1); // SPI³õÊ¼»¯º¯Êý
+  80   1          
+  81   1          px = (whichLed_index == 0) ? &main_led_RGB[0][0] :
+  82   1                                       (whichLed_index == 1) ? &main_led_RGB[ANS_NUM][0] : 
+  83   1                                       (whichLed_index == 2) ? &other_led_RGB[0][0] :
+  84   1                                       (whichLed_index == 3) ? &other_led_RGB[POS_NUM][0] : NULL;
+  85   1          
+  86   1          selected_color = Color_select(color_index);
+  87   1          if(selected_color == NULL) {
+  88   2              selected_color = red_color; // Ä¬ÈÏÑÕÉ«
+  89   2          }
+  90   1          
+  91   1          if(whichLed_index == 0) // ANS - ²Ù×÷µÆ×é (0-27)
+  92   1          {
+  93   2                                      px = &main_led_RGB[0][0];
+  94   2              //for(i = 0; i < ANS_NUM * 3; i++, px++) {
+  95   2              //    *px = 0; //Ö»Çå³ýANS×éµÄÑÕÉ«
+  96   2              //}
+  97   2                                      
+  98   2              for(i = 0; i < ANS_NUM; i++) {
+  99   3                  main_led_RGB[i][0] = selected_color[0];  // G
+ 100   3                  main_led_RGB[i][1] = selected_color[1];  // R  
+ 101   3                  main_led_RGB[i][2] = selected_color[2];  // B
+ 102   3              }
+ 103   2          }
+ 104   1          else if(whichLed_index == 1) // TIP - Ö¸Ê¾µÆ×é (28-34)
+ 105   1          {
+ 106   2                                      px = &main_led_RGB[ANS_NUM][0]; // ´ÓANS_NUM¿ªÊ¼
+ 107   2              for(i = 0; i < TIP_NUM * 3; i++, px++) {
+ 108   3                  *px = 0; //Ö»Çå³ýTIP×éµÄÑÕÉ«
+ 109   3              }
+ 110   2                                      
+ 111   2              for(i = 0; i < TIP_NUM; i++) {
+ 112   3                  main_led_RGB[ANS_NUM + i][0] = selected_color[0]; // G
+ 113   3                  main_led_RGB[ANS_NUM + i][1] = selected_color[1]; // R
+ 114   3                  main_led_RGB[ANS_NUM + i][2] = selected_color[2]; // B
+ 115   3              }
+C51 COMPILER V9.60.7.0   WS2812B                                                           01/05/2026 22:26:26 PAGE 3   
+
+ 116   2          }
+ 117   1          else if(whichLed_index == 2) // POS - Î»ÖÃµÆ×é (0-27)
+ 118   1          {
+ 119   2                                      px = &other_led_RGB[0][0];
+ 120   2              for(i = 0; i < POS_NUM * 3; i++, px++) {
+ 121   3                  *px = 0; //Ö»Çå³ýPOS×éµÄÑÕÉ«
+ 122   3              }
+ 123   2                                      
+ 124   2              for(i = 0; i < POS_NUM; i++) {
+ 125   3                  other_led_RGB[i][0] = selected_color[0];   // G
+ 126   3                  other_led_RGB[i][1] = selected_color[1];   // R
+ 127   3                  other_led_RGB[i][2] = selected_color[2];   // B
+ 128   3              }
+ 129   2          }
+ 130   1          else if(whichLed_index == 3) // ACK - Ð£ÑéµÆ×é (28-53)
+ 131   1          {
+ 132   2                                      px = &other_led_RGB[POS_NUM][0]; 
+ 133   2              for(i = 0; i < ACK_NUM * 3; i++, px++) {
+ 134   3                  *px = 0; //Ö»Çå³ýACK×éµÄÑÕÉ«
+ 135   3              }
+ 136   2                                      
+ 137   2              for(i = 0; i < ACK_NUM; i++) {
+ 138   3                  other_led_RGB[POS_NUM + i][0] = selected_color[0]; // G
+ 139   3                  other_led_RGB[POS_NUM + i][1] = selected_color[1]; // R
+ 140   3                  other_led_RGB[POS_NUM + i][2] = selected_color[2]; // B
+ 141   3              }
+ 142   2          }
+ 143   1          else { 
+ 144   2              return; 
+ 145   2          }    
+ 146   1          
+ 147   1          if(whichLed_index == 0 || whichLed_index == 1)
+ 148   1          {
+ 149   2              LoadMainSPI(); // ½«ÑÕÉ«×°ÔØµ½MainSPIÊý¾Ý
+ 150   2          } else {
+ 151   2              LoadOtherSPI(); // ½«ÑÕÉ«×°ÔØµ½OtherSPIÊý¾Ý
+ 152   2          }
+ 153   1          
+ 154   1      
+ 155   1          
+ 156   1          k = 0;
+ 157   1          j = k * 12; // Ã¿´ÎµÄ¿ªÊ¼µØÖ·²»Í¬
+ 158   1          
+ 159   1          if(whichLed_index == 0 || whichLed_index == 1) {
+ 160   2              for(i = 0; i < MAIN_SPI_NUM; i++) {
+ 161   3                  SPDAT = main_led_SPI[j]; // ·¢ËÍÒ»¸ö×Ö½Ú
+ 162   3                  if(++j >= MAIN_SPI_NUM) j = 0;
+ 163   3                  while((SPSTAT & SPIF) == 0); // µÈ´ý·¢ËÍÍê³É
+ 164   3                  SPSTAT = SPIF + WCOL; // Çå0 SPIFºÍWCOL±êÖ¾
+ 165   3              }
+ 166   2          } else if(whichLed_index == 2 || whichLed_index == 3) {
+ 167   2              for(i = 0; i < OTHER_SPI_NUM; i++) {
+ 168   3                  SPDAT = other_led_SPI[j]; // ·¢ËÍÒ»¸ö×Ö½Ú
+ 169   3                  if(++j >= OTHER_SPI_NUM) j = 0;
+ 170   3                  while((SPSTAT & SPIF) == 0); // µÈ´ý·¢ËÍÍê³É
+ 171   3                  SPSTAT = SPIF + WCOL; // Çå0 SPIFºÍWCOL±êÖ¾
+ 172   3              }
+ 173   2          }
+ 174   1      
+ 175   1      
+ 176   1      }
+ 177          /* 
+C51 COMPILER V9.60.7.0   WS2812B                                                           01/05/2026 22:26:26 PAGE 4   
+
+ 178                  ¹¦ÄÜËµÃ÷         
+ 179          
+ 180                          ÇëÏÈ±ðÐÞ¸Ä³ÌÐò, Ö±½ÓÏÂÔØ"SPI.hex"²âÊÔ, ÏÂÔØÊ±Ñ¡ÔñÖ÷Æµ24MHz»òÊäÈë25.6MHz.
+ 181          
+ 182                          Ê¹ÓÃSPI-MOSIÊä³öÖ±½ÓÇý¶¯WS28123»ùÉ«²ÊµÆ, DMA´«Êä¡£±¾ÀýÇý¶¯60¸öµÆ£¬½Ó³É»·×´¡£±¾ÀýÊ¹ÓÃP1.3-MOSIÊä³öÇý¶¯ÐÅº
+             -Å¡£
+ 183          
+ 184                                  Ã¿¸öµÆ3¸ö×Ö½Ú£¬·Ö±ð¶ÔÓ¦ÂÌ¡¢ºì¡¢À¶Ôò£¬MSBÏÈ·¢.
+ 185                          800KHzÂëÂÊ, Êý¾Ý0(1/4Õ¼¿Õ±È): H=0.3125us  L=0.9375us, Êý¾Ý1(3/4Õ¼¿Õ±È): H=0.9375us  L=0.3125us, RESET>=5
+             -0us.
+ 186                          ¸ßµçÆ½Ê±¼äÒª¾«È·¿ØÖÆÔÚÒªÇóµÄ·¶Î§ÄÚ, µÍµçÆ½Ê±¼ä²»ÐèÒª¾«È·¿ØÖÆ, ´óÓÚÒªÇóµÄ×îÐ¡Öµ²¢Ð¡ÓÚRESµÄ50us¼´¿É.
+ 187          
+ 188                          WS2812SµÄ±ê×¼Ê±ÐòÈçÏÂ:
+ 189                          TH+TL = 1.25us¡À150ns, RES>50us
+ 190                          T0H = 0.25us¡À150ns = 0.10us - 0.40us
+ 191                          T0L = 1.00us¡À150ns = 0.85us - 1.15us
+ 192                          T1H = 1.00us¡À150ns = 0.85us - 1.15us
+ 193                          T1L = 0.25us¡À150ns = 0.10us - 0.40us
+ 194                          Á½¸öÎ»Êý¾ÝÖ®¼äµÄ¼ä¸ôÒªÐ¡ÓÚRESµÄ50us.
+ 195          
+ 196                          SPI·½°¸:
+ 197                          ÓÉÓÚSPIµÄÒ»¸ö×Ö½ÚÊä³öÍê±ÏºóP1.3-MOSI»á»Ö¸´¸ßµçÆ½£¬ËùÓÐÊä³öÒª·´Ïà£¬Ê¹ÓÃMCU×Ô´øµÄÄ£Äâ±È½ÏÆ÷×ö·´Ïà£¬P3.7-CM
+             -P+½ÓVCC/2£¬P3.6-CMP-½ÓP1.3-MOSI£¬P3.4-CMPOÊä³öÐÅºÅ¿ØÖÆWS2812.
+ 198          
+ 199                          ÓÃSPI´«Êä, ËÙ¶È3.0~3.5MHz£¬ÒÔ3.2MHzÎª×î¼Ñ, MSBÏÈ·¢, Ã¿¸ö×Ö½Ú¸ß4Î»ºÍµÍ4Î»·Ö±ð¶ÔÓ¦Ò»¸öÎ»Êý¾Ý, 0111(·´ÏàºóÊ
+             -Ç1000)ÎªÊý¾Ý0, 0001(·´ÏàºóÊÇ1110)ÎªÊý¾Ý1, ÓÐDMA¾ÍÊ¹ÓÃDMA´«Êä, Ã»ÓÐDMA¾ÍÖ±½ÓSPI·¢ËÍ.
+ 200                          SPIÊý¾ÝÎ»       D7 D6 D5 D4    D3 D2 D1 D0
+ 201                          SPIÊý¾Ý         0  1  1  1     0  0  0  1
+ 202                          ±È½ÏÆ÷·´ÏàÊä³ö  1  0  0  0     1  1  1  0
+ 203                                                                                   WS2812Êý¾Ý0    WS2812Êý¾Ý1
+ 204                          SPIÊý¾Ý¸ß°ë×Ö½Ú¶ÔÓ¦µÄWS2812Êý¾Ý0-->0x07, Êý¾Ý1-->0x10,
+ 205                          SPIÊý¾ÝµÍ°ë×Ö½Ú¶ÔÓ¦µÄWS2812Êý¾Ý0-->0x07, Êý¾Ý1-->0x01,
+ 206                          Ö÷Æµ25.6MHz, SPI·ÖÆµ8 = 3.2MHz. ×î¼Ñ.
+ 207                          Ö÷Æµ24.0MHz, SPI·ÖÆµ8 = 3.0MHz.
+ 208                          Ö÷Æµ12.8MHz, SPI·ÖÆµ4 = 3.2MHz. ×î¼Ñ.
+ 209                          Ö÷Æµ12.0MHz, SPI·ÖÆµ4 = 3.0MHz.
+ 210          
+ 211          */
+ 212          
+ 213          void LoadMainSPI(){
+ 214   1          u8  xdata *px;
+ 215   1          u8  k;
+ 216   1          u8  dat;
+ 217   1          u16 i, j;
+ 218   1          
+ 219   1          for(i = 0; i < MAIN_SPI_NUM; i++) main_led_SPI[i] = 0;
+ 220   1          
+ 221   1          px = &main_led_RGB[0][0];
+ 222   1      
+ 223   1          for(i = 0, j = 0; i < (MAIN_NUM * 3); i++)
+ 224   1          {
+ 225   2              dat = *px;
+ 226   2              px++;
+ 227   2              for(k = 0; k < 4; k++)
+ 228   2              {
+ 229   3                  if(dat & 0x80) main_led_SPI[j] = 0xE0; // Êý¾Ý1
+ 230   3                  else main_led_SPI[j] = 0x80; // Êý¾Ý0
+ 231   3                  if(dat & 0x40) main_led_SPI[j] |= 0x0E; // Êý¾Ý1
+ 232   3                  else main_led_SPI[j] |= 0x08; // Êý¾Ý0
+ 233   3                  dat <<= 2;
+ 234   3                  j++;
+ 235   3              }
+C51 COMPILER V9.60.7.0   WS2812B                                                           01/05/2026 22:26:26 PAGE 5   
+
+ 236   2          }
+ 237   1      }
+ 238          
+ 239          void LoadOtherSPI(){
+ 240   1          u8  xdata *px;
+ 241   1          u8  k;
+ 242   1          u8  dat;
+ 243   1          u16 i, j;
+ 244   1          
+ 245   1          for(i = 0; i < OTHER_SPI_NUM; i++) other_led_SPI[i] = 0;
+ 246   1          
+ 247   1          px = &other_led_RGB[0][0];
+ 248   1          
+ 249   1          for(i = 0, j = 0; i < (OTHER_NUM * 3); i++)
+ 250   1          {
+ 251   2              dat = *px;
+ 252   2              px++;
+ 253   2              for(k = 0; k < 4; k++)
+ 254   2              {
+ 255   3                  if(dat & 0x80) other_led_SPI[j] = 0xE0; // Êý¾Ý1
+ 256   3                  else other_led_SPI[j] = 0x80; // Êý¾Ý0
+ 257   3                  if(dat & 0x40) other_led_SPI[j] |= 0x0E; // Êý¾Ý1
+ 258   3                  else other_led_SPI[j] |= 0x08; // Êý¾Ý0
+ 259   3                  dat <<= 2;
+ 260   3                  j++;
+ 261   3              }
+ 262   2          }
+ 263   1      }
+ 264          //========================================================================
+ 265          // º¯Êý: void  SPI_Config(u8 io, u8 speed)
+ 266          // ÃèÊö: SPI³õÊ¼»¯º¯Êý¡£                                                                 MOSI½ÓWS2812µÄDIN
+ 267          // ²ÎÊý: io: ÇÐ»»µ½µÄIO,            SS  MOSI MISO SCLK
+ 268          //                       0: ÇÐ»»µ½ P1.2 P1.3 P1.4 P1.5
+ 269          //                       1: ÇÐ»»µ½ P2.2 P2.3 P2.4 P2.5
+ 270          //                       2: ÇÐ»»µ½ P5.4 P4.0 P4.1 P4.3
+ 271          //                       3: ÇÐ»»µ½ P3.5 P3.4 P3.3 P3.2
+ 272          //       SPI_speed: SPIµÄËÙ¶È, 0: fosc/4,  1: fosc/8,  2: fosc/16,  3: fosc/32
+ 273          // ·µ»Ø: none.
+ 274          // °æ±¾: VER1.0
+ 275          // ÈÕÆÚ: 2018-6-13
+ 276          // ±¸×¢:
+ 277          //========================================================================
+ 278          
+ 279          void  SPI_Config(u8 SPI_io, u8 SPI_speed)
+ 280          {
+ 281   1          // ÏÈÍêÈ«¸´Î» SPI
+ 282   1          SPCTL = 0;               // ½ûÓÃ SPI
+ 283   1          SPDAT = 0;               // Çå¿ÕÊý¾Ý¼Ä´æÆ÷
+ 284   1          SPSTAT = SPIF + WCOL;    // Çå³ýËùÓÐ±êÖ¾
+ 285   1        Delay5us();
+ 286   1              
+ 287   1              P_SW2 |= 0x80;          //SFR enable
+ 288   1              SPCTL = (SSIG << 7) + (SPEN << 6) + (DORD << 5) + (MSTR << 4) + (CPOL << 3) + (CPHA << 2) + (SPI_speed & 
+             -3);        //ÅäÖÃSPI
+ 289   1      
+ 290   1              if(SPI_io == 1)
+ 291   1              {
+ 292   2                      P_SW1 |=  (1<<2);               //ÇÐ»»µ½P2.2(SS) P2.3(MOSI) P2.4(MISO) P2.5(SCLK)
+ 293   2                      P2n_standard(0x3C);             //ÉèÖÃÎª×¼Ë«Ïò¿Ú
+ 294   2                      P24 = 0;                                //MISO = 0, MOSIÊä³öÍê±Ï±£³ÖµÍµçÆ½
+ 295   2                      P2n_push_pull(Pin3);    //Çý¶¯WS2812½«MOSIÉèÖÃÎªÍÆÍìÊä³ö
+ 296   2              }
+C51 COMPILER V9.60.7.0   WS2812B                                                           01/05/2026 22:26:26 PAGE 6   
+
+ 297   1              else if(SPI_io == 2)
+ 298   1              {
+ 299   2                      P_SW1 |=  (2<<2);               //ÇÐ»»µ½P5.4(SS) P4.0(MOSI) P4.1(MISO) P4.3(SCLK)
+ 300   2                      P5n_standard(0x10);             //ÉèÖÃÎª×¼Ë«Ïò¿Ú
+ 301   2                      P4n_standard(0x0B);             //ÉèÖÃÎª×¼Ë«Ïò¿Ú
+ 302   2                      P41 = 0;                                //MISO = 0, MOSIÊä³öÍê±Ï±£³ÖµÍµçÆ½
+ 303   2                      P4n_push_pull(Pin0);    //Çý¶¯WS2812½«MOSIÉèÖÃÎªÍÆÍìÊä³ö
+ 304   2              }
+ 305   1              else if(SPI_io == 3)
+ 306   1              {
+ 307   2                      P_SW1 |=  (3<<2);               //ÇÐ»»µ½P3.5(SS) P3.4(MOSI) P3.3(MISO) P3.2(SCLK)
+ 308   2                      P3n_standard(0x3C);             //ÉèÖÃÎª×¼Ë«Ïò¿Ú
+ 309   2                      P33 = 0;                                //MISO = 0, MOSIÊä³öÍê±Ï±£³ÖµÍµçÆ½
+ 310   2                      P3n_push_pull(Pin4);    //Çý¶¯WS2812½«MOSIÉèÖÃÎªÍÆÍìÊä³ö
+ 311   2              }
+ 312   1              else
+ 313   1              {
+ 314   2                      P_SW1 &= ~(3<<2);               //ÇÐ»»µ½P1.2»òP5.4(SS) P1.3(MOSI) P1.4(MISO) P1.5(SCLK)
+ 315   2                      P1n_standard(0x3C);             //ÉèÖÃÎª×¼Ë«Ïò¿Ú
+ 316   2                      P5n_standard(0x10);             //ÉèÖÃÎª×¼Ë«Ïò¿Ú
+ 317   2                      P14 = 0;                                //MISO = 0, MOSIÊä³öÍê±Ï±£³ÖµÍµçÆ½
+ 318   2                      P1n_push_pull(Pin3);    //Çý¶¯WS2812½«MOSIÉèÖÃÎªÍÆÍìÊä³ö
+ 319   2              }
+ 320   1      }
+ 321          
+ 322          
+ 323          void WS2812_WriteColor2Array(u8 whichLed_index, u8 whichpos, u8 color_index){
+ 324   1          u8 *selected_color;      
+ 325   1        
+ 326   1          selected_color = Color_select(color_index);
+ 327   1          if(selected_color == NULL) {
+ 328   2              selected_color = red_color; // Ä¬ÈÏÑÕÉ«
+ 329   2          }
+ 330   1                      
+ 331   1          if(whichLed_index == 0) // ANS - ²Ù×÷µÆ×é (0-27)
+ 332   1          {
+ 333   2              if(whichpos >= ANS_NUM) return; // Ô½½ç±£»¤
+ 334   2              // Ö»ÉèÖÃµ¥¸öµÆ
+ 335   2              main_led_RGB[whichpos][0] = selected_color[0];  // G
+ 336   2              main_led_RGB[whichpos][1] = selected_color[1];  // R  
+ 337   2              main_led_RGB[whichpos][2] = selected_color[2];  // B
+ 338   2          }
+ 339   1          else if(whichLed_index == 1) // TIP - Ö¸Ê¾µÆ×é (28-34)
+ 340   1          {
+ 341   2              if(whichpos >= TIP_NUM) return;
+ 342   2              main_led_RGB[ANS_NUM + whichpos][0] = selected_color[0]; // G
+ 343   2              main_led_RGB[ANS_NUM + whichpos][1] = selected_color[1]; // R
+ 344   2              main_led_RGB[ANS_NUM + whichpos][2] = selected_color[2]; // B
+ 345   2          }
+ 346   1          else if(whichLed_index == 2) // POS - Î»ÖÃµÆ×é (0-27)
+ 347   1          {
+ 348   2              if(whichpos >= POS_NUM) return;
+ 349   2              other_led_RGB[whichpos][0] = selected_color[0];   // G
+ 350   2              other_led_RGB[whichpos][1] = selected_color[1];   // R
+ 351   2              other_led_RGB[whichpos][2] = selected_color[2];   // B
+ 352   2          }
+ 353   1          else if(whichLed_index == 3) // ACK - Ð£ÑéµÆ×é (28-53)
+ 354   1          {
+ 355   2              if(whichpos >= ACK_NUM) return;
+ 356   2              other_led_RGB[POS_NUM + whichpos][0] = selected_color[0]; // G
+ 357   2              other_led_RGB[POS_NUM + whichpos][1] = selected_color[1]; // R
+ 358   2              other_led_RGB[POS_NUM + whichpos][2] = selected_color[2]; // B
+C51 COMPILER V9.60.7.0   WS2812B                                                           01/05/2026 22:26:26 PAGE 7   
+
+ 359   2          }
+ 360   1          else { 
+ 361   2              return; 
+ 362   2          }    
+ 363   1      }
+ 364          
+ 365          void WS2812_RefreshLEDColor(u8 SPI_io){
+ 366   1                      u16 i, j;
+ 367   1                      //u32 crt_ms;
+ 368   1                      SPI_Config(SPI_io, 1);          
+ 369   1          if(SPI_io == 0){
+ 370   2              LoadMainSPI(); // ½«ÑÕÉ«×°ÔØµ½MainSPIÊý¾Ý
+ 371   2          }else if(SPI_io == 1){
+ 372   2              LoadOtherSPI(); // ½«ÑÕÉ«×°ÔØµ½OtherSPIÊý¾Ý
+ 373   2          }
+ 374   1          
+ 375   1      
+ 376   1          //crt_ms = sys_ms;
+ 377   1          //while(sys_ms - crt_ms < 1);
+ 378   1          
+ 379   1                      j = 0;
+ 380   1      
+ 381   1          if(SPI_io == 0){
+ 382   2              for(i = 0; i < MAIN_SPI_NUM; i++) {
+ 383   3                  SPDAT = main_led_SPI[j]; // ·¢ËÍÒ»¸ö×Ö½Ú
+ 384   3                  j++;
+ 385   3                  while((SPSTAT & SPIF) == 0); // µÈ´ý·¢ËÍÍê³É
+ 386   3                  SPSTAT = SPIF + WCOL; // Çå0 SPIFºÍWCOL±êÖ¾
+ 387   3              }
+ 388   2          }else if(SPI_io == 1){
+ 389   2              for(i = 0; i < OTHER_SPI_NUM; i++) {
+ 390   3                  SPDAT = other_led_SPI[j]; // ·¢ËÍÒ»¸ö×Ö½Ú
+ 391   3                  j++;
+ 392   3                  while((SPSTAT & SPIF) == 0); // µÈ´ý·¢ËÍÍê³É
+ 393   3                  SPSTAT = SPIF + WCOL; // Çå0 SPIFºÍWCOL±êÖ¾
+ 394   3              }
+ 395   2          }
+ 396   1                      
+ 397   1                      //crt_ms = sys_ms;
+ 398   1          //while(sys_ms - crt_ms < 1);
+ 399   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   2244    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =     24      16
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

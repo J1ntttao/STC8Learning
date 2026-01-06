@@ -1,0 +1,32 @@
+C51 COMPILER V9.60.7.0   APP_PRINT                                                         01/05/2026 22:26:27 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE APP_PRINT
+OBJECT MODULE PLACED IN .\Objects\App_Print.obj
+COMPILER INVOKED BY: E:\AAAAAA\Keil_v5\C51\BIN\C51.EXE App\App_Print.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\User;.\Li
+                    -b;.\Hardware;.\App;.\Bare-MetalMultitasking;.\Hardware\I2Csoft_oled) DEBUG OBJECTEXTEND PRINT(.\Listings\App_Print.lst) 
+                    -OBJECT(.\Objects\App_Print.obj)
+
+line level    source
+
+   1          #include "App.h"
+   2          #include "task.h"
+   3          
+   4          u32 cnt = 0;
+   5          void App_Print_1s(){
+   6   1                      printf("cnt: %d\n",cnt++);
+   7   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     28    ----
+   CONSTANT SIZE    =      9    ----
+   XDATA SIZE       =      2    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,1 @@
+"Lib\NVIC.c" LARGE OPTIMIZE (8,SPEED) BROWSE INCDIR(.\User;.\Lib;.\Hardware;.\App;.\Bare-MetalMultitasking;.\Hardware\I2Csoft_oled) DEBUG OBJECTEXTEND PRINT(.\Listings\NVIC.lst) TABS (2) OBJECT(.\Objects\NVIC.obj)

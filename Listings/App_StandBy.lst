@@ -1,0 +1,70 @@
+C51 COMPILER V9.60.7.0   APP_STANDBY                                                       01/05/2026 22:26:28 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE APP_STANDBY
+OBJECT MODULE PLACED IN .\Objects\App_StandBy.obj
+COMPILER INVOKED BY: E:\AAAAAA\Keil_v5\C51\BIN\C51.EXE App\App_StandBy.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\User;.\
+                    -Lib;.\Hardware;.\App;.\Bare-MetalMultitasking;.\Hardware\I2Csoft_oled) DEBUG OBJECTEXTEND PRINT(.\Listings\App_StandBy.l
+                    -st) OBJECT(.\Objects\App_StandBy.obj)
+
+line level    source
+
+   1          #include "App.h"
+   2          
+   3          /* 全局变量定义 */
+   4          static unsigned char anim_index = 0;  /* 动画索引，控制流动 */
+   5          static const unsigned char diagonal_path[28] = {
+   6              /* 斜向流动顺序：从左上到右下 */
+   7              0, 1, 4, 2, 5, 8, 3, 6, 9, 12, 7, 10, 13, 16, 11, 14, 17, 20, 15, 18, 21, 24, 19, 22, 25, 26, 23, 27
+   8          };
+   9          
+  10          void StandbyAnimationWave() {
+  11   1          unsigned char i;
+  12   1          const unsigned char rainbow[7] = {0, 1, 2, 3, 4, 5, 6};  /* 彩虹色 */
+  13   1          unsigned char trail_length = 5;  /* 拖尾长度 */
+  14   1          
+  15   1          if(DeviceState != DeviceDefault) return;
+  16   1          
+  17   1          /* 1. 先清除所有灯为无色 */
+  18   1          for(i = 0; i < 28; i++) {
+  19   2              WS2812_WriteColor2Array(ANS, i, 7);
+  20   2          }
+  21   1          
+  22   1          /* 2. 绘制彩虹斜向流动效果 */
+  23   1          /* 原理：在斜向路径上，从当前位置向前设置拖尾，每个拖尾点颜色不同 */
+  24   1          for(i = 0; i < trail_length; i++) {
+  25   2              /* 计算路径位置：当前位置+偏移 */
+  26   2              unsigned char pos_index = (anim_index + i) % 28;
+  27   2              unsigned char led_pos = diagonal_path[pos_index];
+  28   2              
+  29   2              /* 计算彩虹颜色：拖尾从前到后是完整彩虹 */
+  30   2              unsigned char color_index = (i + anim_index) % 7;
+  31   2              
+  32   2              WS2812_WriteColor2Array(ANS, led_pos, rainbow[color_index]);
+  33   2          }
+  34   1          
+  35   1          /* 3. 刷新显示 */
+  36   1          WS2812_RefreshLEDColor(SPI_0);
+  37   1          
+  38   1          /* 4. 更新索引，控制流动速度 */
+  39   1          anim_index++;
+  40   1          if(anim_index >= 28) {
+  41   2              anim_index = 0;
+  42   2          }
+  43   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    188    ----
+   CONSTANT SIZE    =      7    ----
+   XDATA SIZE       =     29      12
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+C51 COMPILER V9.60.7.0   APP_STANDBY                                                       01/05/2026 22:26:28 PAGE 2   
+
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
